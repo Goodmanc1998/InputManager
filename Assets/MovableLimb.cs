@@ -116,11 +116,6 @@ public abstract class MovableLimb : Limb
         ForceRotation(false);
         */
 
-        
-
-
-            
-
     }
 
 
@@ -146,9 +141,9 @@ public abstract class MovableLimb : Limb
     /// Should not be of magnitude 0.</param>
     public void ForceDirection(Vector2 movement)
     {
-        rb.AddForce(movement.normalized * strength * forceFactor/* * AttackRightNow()*/);
+        rb.AddForce(movement.normalized * strength * forceFactor /* * AttackRightNow()*/);
 
-
+        //Debug.Log(movement);
     }
 
     public void Axis(float horizontalAxis, float verticalAxis)

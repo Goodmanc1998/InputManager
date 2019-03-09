@@ -5,8 +5,6 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
 
-    MovableLimb moveableLimb;
-
     public PairInput[] pairInput;
 
     [System.Serializable]
@@ -15,17 +13,19 @@ public class InputManager : MonoBehaviour
         [Tooltip("The button that will be used to control the limb")]
         public string input;
 
-        [Tooltip("The limbs you would like to control")]
-        public MovableLimb[] limb;
+        //[Tooltip("The limbs you would like to control")]
+        public MovableLimb limb;
     }
+
 
     [System.Serializable]
     public class PairAxis
     {
-        public string axis;
+        public string[] axis;
 
-        [Tooltip("The limbs you would like to control")]
+        //[Tooltip("The limbs you would like to control")]
         public MovableLimb[] limb;
+        
     }
 
     public PairAxis[] pairAxis;
@@ -43,7 +43,8 @@ public class InputManager : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    { 
+    {
+
 
         foreach (PairInput pair in pairInput)
         {
@@ -51,57 +52,80 @@ public class InputManager : MonoBehaviour
 
             
 
-            if (Input.GetButton(pair.input))
+            if (Input.GetButtonDown(pair.input))
             {
-                playerControlingInput(controlled);
+                playerControlingInput(controlled, pair.limb);
                 
                 activeLimbs++;
             }
+
+            if(Input.GetButtonUp(pair.input))
+            {
+                playerControlingInput(controlled, pair.limb);
+
+                activeLimbs--;
+            }
+
+
         }
 
-        foreach (PairAxis pairAxis in pairAxis)
+        foreach (PairAxis pair in pairAxis)
         {
 
-            float horizontalAxis = pairAxis.axis[0];
-            float verticalAxis = pairAxis.axis[1];
-            Vector2 movement = new Vector2(pairAxis.axis[0], pairAxis.axis[1]);
+            float horizontalAxis = Input.GetAxis(pair.axis[0]);
+            float verticalAxis = Input.GetAxis(pair.axis[1]);
 
-            playercontrollingAxis(horizontalAxis, verticalAxis, movement);
 
-            //Debug.Log(horizontalAxis + " : " + verticalAxis);
+            //float verticalAxis = Input.GetAxis(pair.axis[1]);
+            //float PlayerAxis = Input.GetAxis(pair.axis);
+
+            Vector2 movement = new Vector2(horizontalAxis, verticalAxis);
+
+            //playercontrollingAxis(movement, horizontalAxis, verticalAxis, pair.limb[]);
+
+            for (int i = 0; i < pair.limb.Length; i++)
+            {
+                
+
+                playercontrollingAxis(movement, horizontalAxis, verticalAxis, pair.limb[i]);
+            }
+            
+
+            Debug.Log(horizontalAxis + " : " + verticalAxis);
 
 
         }
+
+
 
 
 
 
     }
 
-    public void playerControlingInput(bool controlled)
+    public void playerControlingInput(bool controlled, MovableLimb limb)
     {
         //activeLimbs++;
 
         if (activeLimbs <= maxLimbs)
         {
-            moveableLimb.SetControlled(controlled);
+            //moveableLimb.SetControlled(controlled);
+            limb.SetControlled(controlled);
 
-            Debug.Log("Player being controlled " + controlled);
+            //Debug.Log("Player being controlled " + controlled);
         }
 
-        if(controlled == false)
-            activeLimbs--;
+        //Debug.Log(activeLimbs);
 
-        Debug.Log(activeLimbs);
+      
     }
 
-    public void playercontrollingAxis(float horizontalAxis, float verticalAxis, Vector2 movement)
+    public void playercontrollingAxis(Vector2 movement, float horizontalAxis, float verticalAxis, MovableLimb limb)
     {
-        moveableLimb.Axis(horizontalAxis, verticalAxis);
-        moveableLimb.ForceDirection(movement);
+        limb.Axis(horizontalAxis, verticalAxis);
+        limb.ForceDirection(movement);
 
-
-        Debug.Log(horizontalAxis + " : " + verticalAxis);
+        //Debug.Log(horizontalAxis + " : " + verticalAxis);
         //return pairAxis.
     }
 }
